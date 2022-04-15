@@ -1,5 +1,5 @@
 let img = new Image();
-img.src = '/../images/link.png';
+img.src = '../images/link.PNG';
 img.onload = function() {
   init();
 };
