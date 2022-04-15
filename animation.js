@@ -1,7 +1,7 @@
 let img = new Image();
 
 function loadImage() {
-    img.src = 'images/link.png';
+    img.src = 'images/bunboo-right.png';
     img.onload = function() {
         init();
       };
@@ -12,9 +12,9 @@ loadImage();
 let canvas = document.querySelector('canvas');
 let ctx = canvas.getContext('2d');
 
-const scale = 1.5;
-const width = 57.5;
-const height = 64;
+const scale = 0.2;
+const width = 350;
+const height = 790;
 const scaledWidth = width * scale;
 const scaledHeight = height * scale;
 
@@ -31,14 +31,14 @@ function init() {
     drawFrame(2, 0, scaledWidth * 3, 0);
 }
 
-const cycleLoop = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const cycleLoop = [0, 1, 2];
 let currentLoopIndex = 0;
 let frameCount = 0;
-let positionX = -10;
+let positionX = canvas.width / 2.5;
 
 function step() {
-  positionX += 3
-  frameCount += 3;
+  // positionX += 3
+  frameCount += 1;
   if (frameCount < 10) {
     window.requestAnimationFrame(step);
     return;
@@ -50,9 +50,9 @@ function step() {
   if (currentLoopIndex >= cycleLoop.length) {
     currentLoopIndex = 0;
   }
-  if (positionX > 500) {
-    positionX = -10;
-  }
+  // if (positionX > 500) {
+  //   positionX = -10;
+  // }
   window.requestAnimationFrame(step);
 }
 
