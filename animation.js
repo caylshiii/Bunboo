@@ -1,8 +1,13 @@
 let img = new Image();
-img.src = '../images/link.PNG';
-img.onload = function() {
-  init();
-};
+
+function loadImage() {
+    img.src = 'images/link.png';
+    img.onload = function() {
+        init();
+      };
+  }
+
+loadImage();
 
 let canvas = document.querySelector('canvas');
 let ctx = canvas.getContext('2d');
