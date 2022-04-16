@@ -2,6 +2,8 @@ const frontBtn = document.getElementById('down');
 const backBtn = document.getElementById('up');
 const leftBtn = document.getElementById('left');
 const rightBtn = document.getElementById('right');
+const container = document.querySelector('.container');
+
 
 let canvas = document.querySelector('canvas');
 let ctx = canvas.getContext('2d');
@@ -13,11 +15,11 @@ let height = 660;
 const scaledWidth = width * scaleX;
 const scaledHeight = height * scaleY;
 
-const cycleLoop = [0, 1, 2];
+let cycleLoop = [0, 1, 2];
 let currentLoopIndex = 0;
 let frameCount = 0;
 let positionX = canvas.width / 30;
-let positionY = -10;
+let positionY = -8;
 let facePosition = 0 // 0 = front, 1 = back, 2 = left, 3 = right
 
 let img = new Image();
@@ -25,14 +27,26 @@ let img = new Image();
 function loadImage() {
     img.src = 'images/bunboo.png';
     img.onload = function() {
-        init();
+        drawFrame(0, facePosition, positionX, positionY);
       };
   }
 
 loadImage();
 
+container.addEventListener('click', (e) => {
+  e.stopPropagation();
+  stopAnimation();
+  backBtn.classList.remove('active-up');
+  leftBtn.classList.remove('active-left');
+  rightBtn.classList.remove('active-right');
+  frontBtn.classList.remove('active-down');
+
+})
+
 frontBtn.addEventListener('click', (e) => {
-  e.currentTarget.classList.add('active-down');
+  startAnimation();
+  e.stopPropagation();
+  e.currentTarget.classList.toggle('active-down');
   backBtn.classList.remove('active-up');
   leftBtn.classList.remove('active-left');
   rightBtn.classList.remove('active-right');
@@ -42,7 +56,9 @@ frontBtn.addEventListener('click', (e) => {
 });
 
 backBtn.addEventListener('click', (e) => {
-  e.currentTarget.classList.add('active-up');
+  startAnimation();
+  e.stopPropagation();
+  e.currentTarget.classList.toggle('active-up');
   frontBtn.classList.remove('active-down');
   leftBtn.classList.remove('active-left');
   rightBtn.classList.remove('active-right');
@@ -51,7 +67,9 @@ backBtn.addEventListener('click', (e) => {
 });
 
 rightBtn.addEventListener('click', (e) => {
-  e.currentTarget.classList.add('active-right');
+  startAnimation();
+  e.stopPropagation();
+  e.currentTarget.classList.toggle('active-right');
   leftBtn.classList.remove('active-left');
   frontBtn.classList.remove('active-down');
   backBtn.classList.remove('active-up');
@@ -59,7 +77,9 @@ rightBtn.addEventListener('click', (e) => {
 });
 
 leftBtn.addEventListener('click', (e) => {
-  e.currentTarget.classList.add('active-left');
+  startAnimation();
+  e.stopPropagation();
+  e.currentTarget.classList.toggle('active-left');
   rightBtn.classList.remove('active-right');
   frontBtn.classList.remove('active-down');
   backBtn.classList.remove('active-up');
@@ -72,27 +92,41 @@ function drawFrame(frameX, frameY, canvasX, canvasY) {
                   canvasX, canvasY, scaledWidth, scaledHeight);
   }
 
+let animation;
+let animating = false;
 
-function step() {
-  // positionX += 2  
-  frameCount += 1;
-  if (frameCount < 8) {
-    window.requestAnimationFrame(step);
-    return;
+function animationLoop() {
+  if(animating) {
+    frameCount += 4;
+    if (frameCount < 24) {
+      window.requestAnimationFrame(animationLoop);
+      return;
+    }
+    frameCount = 0;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawFrame(cycleLoop[currentLoopIndex], facePosition, positionX, positionY);
+    currentLoopIndex++;
+    if (currentLoopIndex >= cycleLoop.length) {
+      currentLoopIndex = 0;
+    }
+   animation = window.requestAnimationFrame(animationLoop);
   }
-  frameCount = 0;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawFrame(cycleLoop[currentLoopIndex], facePosition, positionX, positionY);
-  currentLoopIndex++;
-  if (currentLoopIndex >= cycleLoop.length) {
-    currentLoopIndex = 0;
-  }
-  if (positionX > 500) {
-    positionX = 0;
-  }
-  window.requestAnimationFrame(step);
 }
 
-function init() {
-    window.requestAnimationFrame(step);
+function stopAnimation() {
+  if(animating){
+    animating = false;
+    window.cancelAnimationFrame(animation);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawFrame(0, 0, positionX, positionY);
+    console.log("stopped");
   }
+}
+
+function startAnimation() {
+  if(!animating) {
+    animating = true;
+    animationLoop();
+    console.log("started");
+  }
+}
